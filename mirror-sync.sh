@@ -4,14 +4,8 @@
 #################################################################
 
 export PATH='/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
-
+source $1
 PID=$$
-pidfile=/tmp/videolan.pid
-SRC='rsync://rsync.videolan.org/videolan-ftp'  
-DEST='/srv/repositorios/videolan'
-#RSYNC_OPTS="--recursive --times --perms --links --delay-updates --delete-after --hard-links --compress --ipv4"
-RSYNC_OPTS="--verbose --recursive --times --links --hard-links --perms --stats --delete-after --timeout=300 --compress --ipv4"
-LOGFILE="/var/log/videolansync/videolan.log"
 
 # Log all activity to file.
 exec >> $LOGFILE 2>&1
@@ -33,7 +27,7 @@ if [ ! -f $pidfile ] ;then
    fi
 
 else
-   echo "$(date --rfc-3339=seconds) PID file exists, videolan update already running, stopping."
+   echo "$(date --rfc-3339=seconds) PID file exists, update already running, stopping."
 fi
 
 exit 0
