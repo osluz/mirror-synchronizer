@@ -4,6 +4,14 @@
 #################################################################
 
 export PATH='/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
+
+if [[ $# -ne 1 ]]
+  then echo "Error: Missing arguments"
+  echo
+  echo "   Usage: $0 config-file.conf"
+  exit 1
+fi
+
 source $1
 PID=$$
 
