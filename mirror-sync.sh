@@ -18,9 +18,10 @@ PID=$$
 # Log all activity to file.
 exec >> $LOGFILE 2>&1
 
-trap 'rm -f $pidfile > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
+trap 'savelog -c 28 -n $LOGFILE > /dev/null' EXIT
 
 if [ ! -f $pidfile ] ;then
+   trap 'rm -f $pidfile > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
    echo "$PID" >$pidfile
    #trap 'rm -f $pidfile' EXIT
    
