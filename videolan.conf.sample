@@ -1,4 +1,4 @@
-pidfile=/tmp/videolan.pid
+PIDFILE=/tmp/videolan.pid
 SHARED_LOCK=/tmp/mirror-synchronizing/videolan
 TIMEOUT=3600
 SRC='rsync://rsync.videolan.org/videolan-ftp'  

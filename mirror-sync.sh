@@ -43,11 +43,11 @@ exec >> $LOGFILE 2>&1
 #trap 'savelog -c 28 -n $LOGFILE > /dev/null' EXIT
 
 # Creating PID file
-if ! ( set -o noclobber; echo "$PID" > "${pidfile}") 2> /dev/null; then
+if ! ( set -o noclobber; echo "$PID" > "${PIDFILE}") 2> /dev/null; then
    log "PID file exists, update already running, stopping."
    exit 1
 fi
-trap 'rm -f $pidfile > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
+trap 'rm -f $PIDFILE > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
    
 # Create SHARED_LOCK directory
 if ! ( mkdir -p "$SHARED_LOCK_DIR" ) ; then 
@@ -70,7 +70,7 @@ if [ "$(ls -A $SHARED_LOCK_DIR )" ] ; then
 fi
 
 # Creating SHARED_LOCK file
-trap 'rm -f $pidfile > /dev/null 2>&1; rm -f $SHARED_LOCK > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
+trap 'rm -f $PIDFILE > /dev/null 2>&1; rm -f $SHARED_LOCK > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
 echo $PID > "$SHARED_LOCK"
 
 log "Starting to sync from master repository @ '$SRC'..."
