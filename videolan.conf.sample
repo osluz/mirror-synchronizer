@@ -1,4 +1,6 @@
 pidfile=/tmp/videolan.pid
+SHARED_LOCK=/tmp/mirror-synchronizing/videolan
+TIMEOUT=3600
 SRC='rsync://rsync.videolan.org/videolan-ftp'  
 DEST='/srv/repositorios/videolan'
 #RSYNC_OPTS="--recursive --times --perms --links --delay-updates --delete-after --hard-links --compress --ipv4"

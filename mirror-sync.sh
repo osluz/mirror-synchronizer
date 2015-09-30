@@ -33,28 +33,51 @@ fi
 source $1
 PID=$$
 
+SHARED_LOCK_DIR=$(dirname "$SHARED_LOCK")
+# Create SHARED_LOCK directory
+if ! ( mkdir -p "$SHARED_LOCK_DIR" ) ; then 
+   echo "$(date --rfc-3339=seconds) Error while creating SHARED LOCK folder, stopping."
+   exit 1
+fi
+
 # Log all activity to file.
 exec >> $LOGFILE 2>&1
+#trap 'savelog -c 28 -n $LOGFILE > /dev/null' EXIT
 
-trap 'savelog -c 28 -n $LOGFILE > /dev/null' EXIT
-
-if [ ! -f $pidfile ] ;then
-   trap 'rm -f $pidfile > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
-   echo "$PID" >$pidfile
-   #trap 'rm -f $pidfile' EXIT
-   
-   echo "$(date --rfc-3339=seconds) Starting to sync from master repository @ '$SRC'..."
-   if rsync $RSYNC_OPTS $SRC/ $DEST/ ;then 
-
-      LC_ALL=POSIX LANG=POSIX date -u > $DEST/lastsync
-      date >> $DEST/lastsync
-      echo "$(date --rfc-3339=seconds) Finished sync succesfuly"
-   else
-      echo "$(date --rfc-3339=seconds) Error syncing"
-   fi
-
-else
+# Creating PID file
+if ! ( set -o noclobber; echo "$PID" > "${pidfile}") 2> /dev/null; then
    echo "$(date --rfc-3339=seconds) PID file exists, update already running, stopping."
+   exit 1
 fi
+trap 'rm -f $pidfile > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
+   
+# Check if another synchronization proccess is running
+if [ "$(ls -A $SHARED_LOCK_DIR )" ] ; then
+   echo "$(date --rfc-3339=seconds) SHARED_LOCK files exists in $SHARED_LOCK_DIR, another update proccess already running, waiting $TIMEOUT seconds."
+fi
+
+DATE=$(date +%s)
+while [ "$(ls -A $SHARED_LOCK_DIR )" ] && [ $(( $(date +%s) - $DATE )) -lt $TIMEOUT  ] ; do
+   sleep $((60 + $RANDOM/1024))
+done
+  
+if [ "$(ls -A $SHARED_LOCK_DIR )" ] ; then
+   echo "$(date --rfc-3339=seconds) SHARED_LOCK files still exists in $SHARED_LOCK_DIR, another update proccess already running, we've waited for $TIMEOUT seconds, running anyway."
+fi
+
+# Creating SHARED_LOCK file
+trap 'rm -f $pidfile > /dev/null 2>&1; rm -f $SHARED_LOCK > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
+echo $PID > "$SHARED_LOCK"
+
+echo "$(date --rfc-3339=seconds) Starting to sync from master repository @ '$SRC'..."
+if rsync $RSYNC_OPTS $SRC/ $DEST/ ;then 
+
+   LC_ALL=POSIX LANG=POSIX date -u > $DEST/lastsync
+   date >> $DEST/lastsync
+   echo "$(date --rfc-3339=seconds) Finished sync succesfuly"
+else
+   echo "$(date --rfc-3339=seconds) Error syncing"
+fi
+
 
 exit 0
