@@ -1,8 +1,36 @@
+# Lock file
 PIDFILE=/tmp/videolan.pid
+
+# Shared lock folder (and file)
+#  All the synchonizing process with the shared lock file in the same folder will wait each other in order to synchonize one at each time. 
 SHARED_LOCK=/tmp/mirror-synchronizing/videolan
+
+# Timeout before synchronizing anyway
 TIMEOUT=3600
+
+# Source repository
 SRC='rsync://rsync.videolan.org/videolan-ftp'  
+
+# Destination folder
 DEST='/srv/repositorios/videolan'
+
+# Rsync options
 #RSYNC_OPTS="--recursive --times --perms --links --delay-updates --delete-after --hard-links --compress --ipv4"
 RSYNC_OPTS="--verbose --recursive --times --links --hard-links --perms --stats --delete-after --timeout=300 --compress --ipv4"
+
+# Log file
 LOGFILE="/var/log/videolansync/videolan.log"
+
+# Nice level for the rsync process
+NICE_LEVEL=0
+
+# Input/output class and level for the rsync process
+# Class [0-3]:
+#  0: none (= Best-effort)
+#  1: Realtime
+#  2: Best-effort
+#  3: Idle
+IONICE_CLASS=2
+
+# Level [0-7]:
+IONICE_LEVEL=4

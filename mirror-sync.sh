@@ -74,7 +74,7 @@ trap 'rm -f $PIDFILE > /dev/null 2>&1; rm -f $SHARED_LOCK > /dev/null 2>&1; save
 echo $PID > "$SHARED_LOCK"
 
 log "Starting to sync from master repository @ '$SRC'..."
-if rsync $RSYNC_OPTS $SRC/ $DEST/ ;then 
+if nice -n $NICE_LEVEL ionice -c$IONICE_CLASS -n$IONICE_LEVEL rsync $RSYNC_OPTS $SRC/ $DEST/ ;then 
 
    LC_ALL=POSIX LANG=POSIX date -u > $DEST/lastsync
    date >> $DEST/lastsync
