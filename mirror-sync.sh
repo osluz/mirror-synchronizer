@@ -50,7 +50,7 @@ fi
 trap 'rm -f $PIDFILE > /dev/null 2>&1; savelog -c 28 -n $LOGFILE > /dev/null' EXIT
    
 # Create SHARED_LOCK directory
-if ! ( mkdir -p "$SHARED_LOCK_DIR" ) ; then 
+if ! ( mkdir -p -m a+w "$SHARED_LOCK_DIR" ) ; then 
    log "Error while creating SHARED LOCK folder, stopping."
    exit 1
 fi
